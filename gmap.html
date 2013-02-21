@@ -1,0 +1,82 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <title>Test for Gmap</title>
+    <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAjU0EJWnWPMv7oQ-jjS7dYxSPW5CJgpdgO_s4yyMovOaVh_KvvhSfpvagV18eOyDWu7VytS6Bi1CWxw"
+      type="text/javascript"></script>
+	  <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/black-tie/jquery-ui.css" type="text/css" />
+    <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js'></script>
+    <script src='http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/jquery-ui.min.js'></script>
+    <script type="text/javascript">
+
+    var map = null;
+    var geocoder = null;
+
+    function initialize() {
+      if (GBrowserIsCompatible()) {
+        map = new GMap2(document.getElementById("map_canvas"));
+        map.setCenter(new GLatLng(37.4419, -122.1419), 1);
+        map.setUIToDefault();
+        geocoder = new GClientGeocoder();
+      }
+    }
+
+    function showAddress(address) {
+      if (geocoder) {
+        geocoder.getLatLng(
+          address,
+          function(point) {
+            if (!point) {
+              alert(address + " not found");
+            } else {
+              map.setCenter(point, 15);
+              var marker = new GMarker(point, {draggable: true});
+              map.addOverlay(marker);
+              GEvent.addListener(marker, "dragend", function() {
+                marker.openInfoWindowHtml(marker.getLatLng().toUrlValue(6));
+              });
+              GEvent.addListener(marker, "click", function() {
+                marker.openInfoWindowHtml(marker.getLatLng().toUrlValue(6));
+              });
+	      GEvent.trigger(marker, "click");
+            }
+          }
+        );
+      }
+    }
+    </script>
+	<script type='text/javascript'>  
+		var availableAddress = new Array();
+
+		availableAddress[0] = "Anda, China";
+		availableAddress[1] = "Anshan, China";
+		availableAddress[2] = "Anyang, China";
+		availableAddress[3] = "changchun, China";
+		availableAddress[4] = "changde, China";
+		availableAddress[5] = "chengdu, China";
+		availableAddress[6] = "shanghai, China";
+		availableAddress[7] = "shangzi, China";
+		availableAddress[8] = "shenzhen, China";
+
+		$(document).ready(function() {
+			$( "#address" ).autocomplete({
+				source:availableAddress,
+				delay:100
+			});
+		});
+	</script>
+  </head>
+
+  <body onload="initialize()" onunload="GUnload()">
+    <form action="#" onsubmit="showAddress(this.address.value); return false">
+      <p>
+        <input type="text" style="width:350px" name="address" id="address" value="Shenzhen, China" />
+        <input type="submit" value="Go!" />
+      </p>
+      <div id="map_canvas" style="width: 600px; height: 400px"></div>
+    </form>
+
+  </body>
+</html>
